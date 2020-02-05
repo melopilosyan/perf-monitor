@@ -1,0 +1,33 @@
+# == Schema Information
+#
+# Table name: test_results
+#
+#  id                :integer          not null, primary key
+#  test_criterium_id :integer
+#  ttfb              :integer
+#  tti               :integer
+#  speed_index       :integer
+#  passed            :boolean
+#  created_at        :datetime         not null
+#  updated_at        :datetime         not null
+#
+# Indexes
+#
+#  index_test_results_on_test_criterium_id  (test_criterium_id)
+#
+
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  test_criterium: 
+  ttfb: 1
+  tti: 1
+  speed_index: 1
+  passed: false
+
+two:
+  test_criterium: 
+  ttfb: 1
+  tti: 1
+  speed_index: 1
+  passed: false
