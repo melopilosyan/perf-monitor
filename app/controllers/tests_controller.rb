@@ -1,15 +1,15 @@
 class TestsController < ApplicationController
-
   def index
     render_resource TestResult.by_url(params[:url])
   end
 
   def create
-    criterium = TestCriterium.new test_params
-    if criterium.save
-      render_resource criterium.results.last, include_criteria: false
+    result = TestCriterium.run_test test_params
+
+    if result.error.present?
+      render json: { error: result.error }
     else
-      render json: { error: criterium.errors.full_messages.join('. ') }
+      render_resource result, include_criteria: false
     end
   end
 

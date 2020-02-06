@@ -17,21 +17,30 @@ class TestCriterium < ApplicationRecord
   accepts_nested_attributes_for :results
 
   validates_presence_of :url
-  validates_numericality_of :max_tti, :max_ttfp,
-                            :max_ttfb, :max_speed_index, greater_than: 0
+  validates :max_tti, :max_ttfp, :max_ttfb, :max_speed_index,
+            presence: true, numericality: { greater_than: 0 }
 
-  after_validation :run_test
+  after_validation :run_test_first_time
+
+  def self.run_test(params)
+    all_attrs = new.attributes.symbolize_keys.merge params
+    criterium = find_or_initialize_by all_attrs
+    return criterium.rerun_test if criterium.persisted?
+
+    criterium.save
+    criterium.results.last
+  end
 
   def rerun_test
     results.create PageSpeedApi.insights_for(url)
   end
 
-  private
-
-  def run_test
+  def run_test_first_time
     data = PageSpeedApi.insights_for url
-    return errors.add :base, data[:error] if data[:error]
 
-    self.results_attributes = [data]
+    errors.add :base, data[:error] if data[:error]
+    data[:error] = errors.full_messages.join('. ').presence if errors.any?
+
+    results.build data
   end
 end
