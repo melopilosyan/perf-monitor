@@ -1,6 +1,6 @@
 class TestsController < ApplicationController
   def index
-    render_resource TestResult.by_url(params[:url])
+    render_result TestResult.by_url params[:url]
   end
 
   def create
@@ -9,12 +9,12 @@ class TestsController < ApplicationController
     if result.error.present?
       render json: { error: result.error }
     else
-      render_resource result, include_criteria: false
+      render_result result, include_criteria: false
     end
   end
 
   def last
-    render_resource TestResult.by_url(params[:url]).last
+    render_result TestResult.by_url(params[:url]).last
   end
 
   private
@@ -24,8 +24,7 @@ class TestsController < ApplicationController
       :max_ttfp, :retry_in_mins
   end
 
-  def render_resource(resource, include_criteria: true)
-    render json: resource, scope: include_criteria,
-      scope_name: :include_criteria
+  def render_result(result, include_criteria: true)
+    render json: result, scope: include_criteria, scope_name: :include_criteria
   end
 end

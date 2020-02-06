@@ -20,14 +20,14 @@
 
 class TestResult < ApplicationRecord
   belongs_to :criterium, inverse_of: :results,
-             class_name: 'TestCriterium', foreign_key: :test_criterium_id
+    class_name: 'TestCriterium', foreign_key: :test_criterium_id
 
-  delegate :max_ttfb, :max_ttfp, :max_tti, :max_speed_index, to: :criterium
+  delegate *TestCriterium::REQUIRED_COLUMNS.keys, to: :criterium
 
   before_save :set_passed_state
 
   scope :by_url, -> url do
-    joins(:criterium).where(test_criteria: { url: url })
+    joins(:criterium).where test_criteria: { url: url }
   end
 
   def set_passed_state

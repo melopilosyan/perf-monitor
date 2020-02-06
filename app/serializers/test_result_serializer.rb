@@ -19,7 +19,7 @@
 #
 
 class TestResultSerializer < ActiveModel::Serializer
-  attributes :ttfb, :ttfp, :tti, :speed_index, :passed
+  attributes :passed, :ttfb, :ttfp, :tti, :speed_index
   with_options if: -> { include_criteria } do
     attribute :url
     attribute :max_ttfb
@@ -31,5 +31,9 @@ class TestResultSerializer < ActiveModel::Serializer
 
   def url
     object.criterium.url
+  end
+
+  def created_at
+    object.created_at.to_s
   end
 end
