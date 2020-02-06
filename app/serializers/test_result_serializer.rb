@@ -18,20 +18,18 @@
 #  index_test_results_on_test_criterium_id  (test_criterium_id)
 #
 
-class TestResult < ApplicationRecord
-  belongs_to :criterium, inverse_of: :results,
-             class_name: 'TestCriterium', foreign_key: :test_criterium_id
-
-  delegate :max_ttfb, :max_ttfp, :max_tti, :max_speed_index, to: :criterium
-
-  before_save :set_passed_state
-
-  scope :by_url, -> url do
-    joins(:criterium).where(test_criteria: { url: url })
+class TestResultSerializer < ActiveModel::Serializer
+  attributes :ttfb, :ttfp, :tti, :speed_index, :passed
+  with_options if: -> { include_criteria } do
+    attribute :url
+    attribute :max_ttfb
+    attribute :max_ttfp
+    attribute :max_tti
+    attribute :max_speed_index
+    attribute :created_at
   end
 
-  def set_passed_state
-    self.passed = ttfb <= max_ttfb && ttfp <= max_ttfp &&
-      tti <= max_tti && speed_index <= max_speed_index rescue false
+  def url
+    object.criterium.url
   end
 end
