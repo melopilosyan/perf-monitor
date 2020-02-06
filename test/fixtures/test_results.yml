@@ -11,6 +11,7 @@
 #  created_at        :datetime         not null
 #  updated_at        :datetime         not null
 #  ttfp              :integer
+#  error             :string
 #
 # Indexes
 #

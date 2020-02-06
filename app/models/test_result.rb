@@ -11,6 +11,7 @@
 #  created_at        :datetime         not null
 #  updated_at        :datetime         not null
 #  ttfp              :integer
+#  error             :string
 #
 # Indexes
 #
@@ -18,17 +19,15 @@
 #
 
 class TestResult < ApplicationRecord
-  ATTRS_MAP = {
-    ttfp: 'first-meaningful-paint',
-    ttfb: 'time-to-first-byte',
-    tti: 'interactive',
-    speed_index: 'speed-index'
-  }.freeze
-
   belongs_to :criterium, inverse_of: :results,
              class_name: 'TestCriterium', foreign_key: :test_criterium_id
 
-  def self.parse_page_speed_info(audits)
-    ATTRS_MAP.map {|k, v| [k, audits[v]['numericValue']] }.to_h
+  delegate :max_ttfb, :max_ttfp, :max_tti, :max_speed_index, to: :criterium
+
+  before_save :set_passed_state
+
+  def set_passed_state
+    self.passed = ttfb <= max_ttfb && ttfp <= max_ttfp &&
+      tti <= max_tti && speed_index <= max_speed_index rescue false
   end
 end

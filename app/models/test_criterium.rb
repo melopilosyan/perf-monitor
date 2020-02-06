@@ -20,18 +20,18 @@ class TestCriterium < ApplicationRecord
   validates_numericality_of :max_tti, :max_ttfp,
                             :max_ttfb, :max_speed_index, greater_than: 0
 
-  after_validation :set_results_attributes
+  after_validation :run_test
 
-  def set_results_attributes
-    result = PageSpeedApi.process url
-    return process_error result if result['error']
-
-    self.results_attributes =
-      [TestResult.parse_page_speed_info(result['lighthouseResult']['audits'])]
+  def rerun_test
+    results.create PageSpeedApi.insights_for(url)
   end
 
-  def process_error(result)
-    res_errors = result['error']['errors'].map { |err| err['message'] }
-    errors.add :base, res_errors.join('. ')
+  private
+
+  def run_test
+    data = PageSpeedApi.insights_for url
+    return errors.add :base, data[:error] if data[:error]
+
+    self.results_attributes = [data]
   end
 end
