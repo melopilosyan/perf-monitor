@@ -10,6 +10,7 @@
 #  max_ttfp        :integer
 #  created_at      :datetime         not null
 #  updated_at      :datetime         not null
+#  retry_in_mins   :integer          default(0)
 #
 
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html

@@ -20,11 +20,12 @@ class TestsController < ApplicationController
   private
 
   def test_params
-    params.permit :url, :max_ttfb, :max_tti, :max_speed_index, :max_ttfp
+    params.permit :url, :max_ttfb, :max_tti, :max_speed_index,
+      :max_ttfp, :retry_in_mins
   end
 
-  def render_resource(resours, include_criteria: true)
-    render json: resours, scope: include_criteria,
+  def render_resource(resource, include_criteria: true)
+    render json: resource, scope: include_criteria,
       scope_name: :include_criteria
   end
 end

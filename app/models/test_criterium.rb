@@ -10,20 +10,25 @@
 #  max_ttfp        :integer
 #  created_at      :datetime         not null
 #  updated_at      :datetime         not null
+#  retry_in_mins   :integer          default(0)
 #
 
 class TestCriterium < ApplicationRecord
+  REQUIRED_COLUMNS = {
+    max_ttfp: nil, max_ttfb: nil, max_tti: nil, max_speed_index: nil
+  }.freeze
+
   has_many :results, inverse_of: :criterium, class_name: 'TestResult'
-  accepts_nested_attributes_for :results
 
   validates_presence_of :url
-  validates :max_tti, :max_ttfp, :max_ttfb, :max_speed_index,
-            presence: true, numericality: { greater_than: 0 }
+  validates *REQUIRED_COLUMNS.keys, presence: true,
+    numericality: { greater_than: 0 }
 
   after_validation :run_test_first_time
+  after_create :schedule_next_run
 
   def self.run_test(params)
-    all_attrs = new.attributes.symbolize_keys.merge params
+    all_attrs = REQUIRED_COLUMNS.merge params.to_h.symbolize_keys
     criterium = find_or_initialize_by all_attrs
     return criterium.rerun_test if criterium.persisted?
 
@@ -36,11 +41,19 @@ class TestCriterium < ApplicationRecord
   end
 
   def run_test_first_time
+    return if persisted?
+
     data = PageSpeedApi.insights_for url
 
     errors.add :base, data[:error] if data[:error]
     data[:error] = errors.full_messages.join('. ').presence if errors.any?
 
     results.build data
+  end
+
+  def schedule_next_run
+    return unless retry_in_mins.positive?
+
+    RerunTestJob.set(wait: retry_in_mins.minutes).perform_later id
   end
 end
