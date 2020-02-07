@@ -1,13 +1,21 @@
+<h3>Page performance insights during the test at <%= @test_result.created_at %></h3>
 <pre>
-  ttfb : <%= @test_result.ttfb %>
-  ttfp : <%= @test_result.ttfp %>
-  tti : <%= @test_result.tti %>
-  speed_index : <%= @test_result.speed_index %>
-  passed : <%= @test_result.passed %>
-  passed : <%= @test_result.criterium.url %>
-  max_ttfb : <%= @test_result.max_ttfb %>
-  max_ttfp : <%= @test_result.max_ttfp %>
-  max_tti :<%= @test_result.max_tti %>
-  max_speed_index : <%= @test_result.max_speed_index %>
-  created_at: <%= @test_result.created_at %>
+  <b>url</b>: <%= link_to @test_result.criterium.url, @test_result.criterium.url, target: '_blank' %>
+
+  <b>ttfb</b>: <%= @test_result.ttfb %><%= "\t\t" %>/ Time to First Byte
+  <b>ttfp</b>: <%= @test_result.ttfp %><%= "\t\t" %>/ Time to First Meaningful Paint
+  <b>tti</b>: <%= @test_result.tti %><%= "\t\t" %>/ Time to Interactive
+  <b>speed_index</b>: <%= @test_result.speed_index %><%= "\t" %>/ Google’s speed rating for the site
+
+  // test criteria
+  <b>max_ttfb</b>: <%= @test_result.max_ttfb %>
+  <b>max_ttfp</b>: <%= @test_result.max_ttfp %>
+  <b>max_tti</b>: <%= @test_result.max_tti %>
+  <b>max_speed_index</b>: <%= @test_result.max_speed_index %>
 </pre>
+<% if @test_result.error %>
+<p><b>ERROR</b>: <%= @test_result.error %></p>
+<% end %>
+<% if @test_result.criterium.rerun_in_mins.positive? %>
+<p>Scheduled to rerun at <%= @test_result.criterium.rerun_in_mins.minutes.from_now %></p>
+<% end %>
