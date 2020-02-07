@@ -1,0 +1,68 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: https://www.googleapis.com/pagespeedonline/v5/runPagespeed?key=&url=invalid
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - Ruby
+      Host:
+      - www.googleapis.com
+  response:
+    status:
+      code: 400
+      message: Bad Request
+    headers:
+      Vary:
+      - Origin
+      - Referer
+      - X-Origin
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Fri, 07 Feb 2020 04:47:01 GMT
+      Server:
+      - ESF
+      Cache-Control:
+      - private
+      X-Xss-Protection:
+      - '0'
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Content-Type-Options:
+      - nosniff
+      Alt-Svc:
+      - quic=":443"; ma=2592000; v="46,43",h3-Q050=":443"; ma=2592000,h3-Q049=":443";
+        ma=2592000,h3-Q048=":443"; ma=2592000,h3-Q046=":443"; ma=2592000,h3-Q043=":443";
+        ma=2592000
+      Transfer-Encoding:
+      - chunked
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "error": {
+            "code": 400,
+            "message": "Request contains an invalid argument.",
+            "errors": [
+              {
+                "message": "Invalid value 'invalid'. Values must match the following regular expression: '(?i)(url:|origin:)?http(s)?://.*'",
+                "domain": "gdata.CoreErrorDomain",
+                "reason": "INVALID_PARAMETER",
+                "location": "url",
+                "locationType": "other"
+              }
+            ],
+            "status": "INVALID_ARGUMENT"
+          }
+        }
+    http_version: null
+  recorded_at: Fri, 07 Feb 2020 04:47:02 GMT
+recorded_with: VCR 5.1.0

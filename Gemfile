@@ -41,6 +41,13 @@ group :development do
   gem 'annotate', '~> 2.6.5'
 end
 
+group :test do
+  gem 'rspec-rails', '~> 3.9'
+  gem 'vcr', '~> 5.1'
+  gem 'webmock', '~> 3.8'
+  gem 'simplecov', require: false
+end
+
 gem 'pry-rails'
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
