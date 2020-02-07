@@ -45,6 +45,7 @@ RSpec.describe 'Page Speed Insights' do
 
         expect_response '{"passed":true,"ttfb":163,"ttfp":544,"tti":544,"speed_index":544}'
         expect(RerunTestJob).not_to have_been_enqueued
+        expect(ActionMailer::DeliveryJob).not_to have_been_enqueued
       end
 
       it 'runs test with rerun in 2 minutes' do
@@ -56,6 +57,7 @@ RSpec.describe 'Page Speed Insights' do
         end
 
         expect_response '{"passed":true,"ttfb":131,"ttfp":663,"tti":663,"speed_index":541}'
+        expect(ActionMailer::DeliveryJob).not_to have_been_enqueued
       end
 
       it 'uses existing TestCriterium object' do
@@ -67,9 +69,10 @@ RSpec.describe 'Page Speed Insights' do
 
         expect_response '{"passed":true,"ttfb":163,"ttfp":544,"tti":544,"speed_index":544}'
         expect(RerunTestJob).not_to have_been_enqueued
+        expect(ActionMailer::DeliveryJob).not_to have_been_enqueued
       end
 
-      # not a request, but need to be tested :)
+      # I know it's a job test, but lets do it here
       it 'performs RerunTestJob and schedules next run' do
         VCR.use_cassette 'rerun-test-job' do
           expect {
@@ -78,6 +81,17 @@ RSpec.describe 'Page Speed Insights' do
         end
 
         expected_enqueued_job RerunTestJob, at: 2.minutes.from_now
+        expect(ActionMailer::DeliveryJob).not_to have_been_enqueued
+      end
+
+      it 'sends notify_not_passed email' do
+        VCR.use_cassette 'notify_not_passed' do
+          successful_post params.merge max_tti: 200
+        end
+
+        expect(ActionMailer::DeliveryJob).to have_been_enqueued
+          .with('TestResultMailer', 'notify_not_passed', 'deliver_now', TestResult.last.id)
+        expect_response '{"passed":false,"ttfb":148,"ttfp":658,"tti":673,"speed_index":658}'
       end
     end
 
@@ -95,6 +109,7 @@ RSpec.describe 'Page Speed Insights' do
 
         expect_response %q({"error":"Max tti can't be blank. Max tti is not a number"})
         expect(RerunTestJob).not_to have_been_enqueued
+        expect(ActionMailer::DeliveryJob).not_to have_been_enqueued
       end
 
       it 'responds with error message if given URL is invalid' do
@@ -104,6 +119,7 @@ RSpec.describe 'Page Speed Insights' do
 
         expect_response %q({"error":"Invalid value 'invalid'. Values must match the following regular expression: '(?i)(url:|origin:)?http(s)?://.*'"})
         expect(RerunTestJob).not_to have_been_enqueued
+        expect(ActionMailer::DeliveryJob).not_to have_been_enqueued
       end
     end
   end
@@ -119,7 +135,7 @@ RSpec.describe 'Page Speed Insights' do
       get '/tests', params: params
 
       entries = JSON.parse response.body
-      expect(entries.size).to eql(4)
+      expect(entries.size).to eql(5)
       expect(entries.first.keys).to eql(entry_attrs)
     end
 
