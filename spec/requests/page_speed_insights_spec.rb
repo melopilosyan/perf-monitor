@@ -51,7 +51,7 @@ RSpec.describe 'Page Speed Insights' do
       it 'runs test with rerun in 2 minutes' do
         VCR.use_cassette 'valid-criteria-with-rerun' do
           # assert_enqueued_with job: RerunTestJob, at: Time.now + 2.minutes do
-          successful_post params.merge max_tti: 789, retry_in_mins: 2
+          successful_post params.merge max_tti: 789, rerun_in_mins: 2
 
           expected_enqueued_job RerunTestJob, at: 2.minutes.from_now
         end
@@ -114,7 +114,7 @@ RSpec.describe 'Page Speed Insights' do
 
       it 'responds with error message if given URL is invalid' do
         VCR.use_cassette 'invalid-url' do
-          failure_post params.merge url: 'invalid', retry_in_mins: 2
+          failure_post params.merge url: 'invalid', rerun_in_mins: 2
         end
 
         expect_response %q({"error":"Invalid value 'invalid'. Values must match the following regular expression: '(?i)(url:|origin:)?http(s)?://.*'"})

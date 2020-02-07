@@ -10,7 +10,7 @@
 #  max_ttfp        :integer
 #  created_at      :datetime         not null
 #  updated_at      :datetime         not null
-#  retry_in_mins   :integer          default(0)
+#  rerun_in_mins   :integer          default(0)
 #
 
 class TestCriterium < ApplicationRecord

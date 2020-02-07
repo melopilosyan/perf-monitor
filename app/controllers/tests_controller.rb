@@ -21,7 +21,7 @@ class TestsController < ApplicationController
 
   def test_params
     params.permit :url, :max_ttfb, :max_tti, :max_speed_index,
-      :max_ttfp, :retry_in_mins
+      :max_ttfp, :rerun_in_mins
   end
 
   def render_result(result, include_criteria: true)
