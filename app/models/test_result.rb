@@ -27,7 +27,7 @@ class TestResult < ApplicationRecord
   before_save :set_passed_state
 
   after_create do
-    TestResultMailer.notify_failure(id).deliver_later unless passed
+    TestResultMailer.notify_not_passed(id).deliver_later unless passed
   end
 
   scope :by_url, -> url do
