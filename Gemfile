@@ -30,6 +30,7 @@ gem 'bootsnap', '>= 1.1.0', require: false
 
 group :development, :test do
   gem 'dotenv-rails'
+  gem 'rspec-rails', '~> 3.9'
 end
 
 group :development do
@@ -42,7 +43,6 @@ group :development do
 end
 
 group :test do
-  gem 'rspec-rails', '~> 3.9'
   gem 'vcr', '~> 5.1'
   gem 'webmock', '~> 3.8'
   gem 'simplecov', require: false
