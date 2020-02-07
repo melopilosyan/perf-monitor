@@ -1,4 +1,9 @@
 class RerunTestJob < ApplicationJob
+  def self.schedule_for(criterium)
+    return unless criterium.retry_in_mins.positive?
+
+    set(wait: criterium.retry_in_mins.minutes).perform_later criterium.id
+  end
 
   def perform(test_criterium_id)
     criterium = TestCriterium.find_by id: test_criterium_id
@@ -6,7 +11,6 @@ class RerunTestJob < ApplicationJob
 
     criterium.rerun_test
 
-    return unless criterium.retry_in_mins.positive?
-    retry_job wait: criterium.retry_in_mins.minutes
+    self.class.schedule_for criterium
   end
 end

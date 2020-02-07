@@ -18,14 +18,15 @@ class TestCriterium < ApplicationRecord
     max_ttfp: nil, max_ttfb: nil, max_tti: nil, max_speed_index: nil
   }.freeze
 
-  has_many :results, inverse_of: :criterium, class_name: 'TestResult'
+  has_many :results, inverse_of: :criterium,
+    class_name: 'TestResult', dependent: :destroy
 
   validates_presence_of :url
   validates *REQUIRED_COLUMNS.keys, presence: true,
     numericality: { greater_than: 0 }
 
   after_validation :run_test_first_time
-  after_create :schedule_next_run
+  after_create { RerunTestJob.schedule_for self }
 
   def self.run_test(params)
     all_attrs = REQUIRED_COLUMNS.merge params.to_h.symbolize_keys
@@ -49,11 +50,5 @@ class TestCriterium < ApplicationRecord
     data[:error] = errors.full_messages.join('. ').presence if errors.any?
 
     results.build data
-  end
-
-  def schedule_next_run
-    return unless retry_in_mins.positive?
-
-    RerunTestJob.set(wait: retry_in_mins.minutes).perform_later id
   end
 end
