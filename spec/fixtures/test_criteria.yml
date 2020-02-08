@@ -1,0 +1,14 @@
+one:
+  url: 'http://website.com'
+  max_tti: 200
+  max_ttfb: 300
+  max_ttfp: 327
+  rerun_in_mins: 0
+  max_speed_index: 820
+two:
+  url: 'http://website.com'
+  max_tti: 200
+  max_ttfb: 300
+  max_ttfp: 327
+  rerun_in_mins: 25
+  max_speed_index: 820

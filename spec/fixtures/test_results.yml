@@ -1,0 +1,15 @@
+first:
+  criterium: one
+  tti: 520
+  ttfp: 520
+  ttfb: 178
+  passed: false
+  speed_index: 520
+error:
+  criterium: two
+  tti: 522
+  ttfp: 521
+  ttfb: 178
+  passed: false
+  speed_index: 523
+  error: My error message
